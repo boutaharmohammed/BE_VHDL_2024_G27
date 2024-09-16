@@ -1,0 +1,37 @@
+library IEEE;
+use IEEE.STD_LOGIC_1164.ALL;
+use IEEE.STD_LOGIC_ARITH.ALL;
+use IEEE.STD_LOGIC_UNSIGNED.ALL;
+
+entity pwm_gen is
+    Port ( clk      : in  STD_LOGIC;
+           reset_n  : in  STD_LOGIC;
+           duty     : in  STD_LOGIC_VECTOR (7 downto 0); -- N = 8 bits
+           pwm_out  : out STD_LOGIC);
+end pwm_gen;
+
+architecture Behavioral of pwm_gen is
+    signal counter : STD_LOGIC_VECTOR (7 downto 0); -- Compteur N bits 
+    -- constant duty_value : STD_LOGIC_VECTOR (7 downto 0) := "10000000"; -- 50% de rapport cyclique
+
+begin
+
+    process (clk, reset_n)
+    begin
+        if (reset_n = '0') then
+            counter <= (others => '0'); -- Réinitialisation asynchrone
+        elsif (rising_edge(clk)) then
+            counter <= counter + 1; -- Incrémentation du compteur
+        end if;
+    end process;
+
+    process (counter, duty)
+    begin
+        if(counter < duty) then
+            pwm_out <= '1'; -- Génération de la PWM
+        else
+            pwm_out <= '0';
+        end if;
+    end process;
+
+end Behavioral;
